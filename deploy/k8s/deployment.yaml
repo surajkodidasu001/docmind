@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docmind-api
+  labels:
+    app: docmind-api
+spec:
+  replicas: 2  # baseline; KEDA scales this up/down, see scaledobject.yaml
+  selector:
+    matchLabels:
+      app: docmind-api
+  template:
+    metadata:
+      labels:
+        app: docmind-api
+    spec:
+      containers:
+        - name: api
+          image: docmind:latest  # replace with your pushed image
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: docmind-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docmind-ui
+  labels:
+    app: docmind-ui
+spec:
+  replicas: 1  # UI is stateless/cheap; not autoscaled in this setup
+  selector:
+    matchLabels:
+      app: docmind-ui
+  template:
+    metadata:
+      labels:
+        app: docmind-ui
+    spec:
+      containers:
+        - name: ui
+          image: docmind:latest
+          command: ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+          ports:
+            - containerPort: 8501
+          env:
+            - name: DOCMIND_API_URL
+              value: "http://docmind-api:8000/api"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

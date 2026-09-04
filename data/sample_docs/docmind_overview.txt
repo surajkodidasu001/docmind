@@ -1,0 +1,19 @@
+DocMind: Agentic Document Intelligence Platform
+
+DocMind is a retrieval-augmented system that combines dense embedding search
+with BM25 sparse retrieval, fused using Reciprocal Rank Fusion (RRF). The
+orchestration layer is built on LangGraph, which routes queries adaptively:
+simple greetings skip retrieval entirely, while substantive questions trigger
+a full retrieve-generate-verify loop.
+
+Every generated answer is citation-grounded — each claim is tagged with a
+reference to the specific source chunk it came from. A verification step
+checks the lexical overlap between each cited claim and its source chunk,
+producing a confidence score. If confidence falls below a threshold, the
+agent automatically retries with a wider retrieval window before falling
+back to an explicit low-confidence warning.
+
+The system also tracks cost, token usage, and latency at every pipeline
+stage, giving a per-query breakdown of exactly where money and time are
+being spent — useful for identifying optimization opportunities like
+semantic caching or model routing.

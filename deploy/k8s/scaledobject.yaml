@@ -1,0 +1,23 @@
+# Requires KEDA + keda-http-add-on installed on the cluster.
+# Scales docmind-api based on in-flight HTTP request rate rather than CPU,
+# since this workload spends most of its time waiting on the Anthropic API
+# (I/O-bound), not burning CPU — a CPU-based HPA would scale far too late.
+apiVersion: http.keda.sh/v1alpha1
+kind: HTTPScaledObject
+metadata:
+  name: docmind-api-httpscaler
+spec:
+  hosts:
+    - docmind.example.com  # replace with your real ingress host
+  scaleTargetRef:
+    deployment: docmind-api
+    service: docmind-api
+    port: 8000
+  replicas:
+    min: 2
+    max: 10
+  scalingMetric:
+    requestRate:
+      granularity: 1s
+      targetValue: 20   # scale up once average requests/sec per pod exceeds this
+      window: 1m

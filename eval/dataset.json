@@ -1,0 +1,25 @@
+{
+  "description": "Small held-out QA set for evaluating DocMind's answer faithfulness and relevance. Built against data/sample_docs/docmind_overview.txt. Expand this with your own document + question/answer pairs for a meaningful eval on real data.",
+  "cases": [
+    {
+      "id": "q1",
+      "question": "What two retrieval methods does DocMind combine?",
+      "reference_answer": "DocMind combines dense embedding search with BM25 sparse keyword search, fused with Reciprocal Rank Fusion."
+    },
+    {
+      "id": "q2",
+      "question": "What happens when the agent's confidence is below the threshold?",
+      "reference_answer": "The agent automatically retries with a wider retrieval window before falling back to a low-confidence warning."
+    },
+    {
+      "id": "q3",
+      "question": "What does DocMind track per pipeline stage?",
+      "reference_answer": "DocMind tracks cost, token usage, and latency at every pipeline stage."
+    },
+    {
+      "id": "q4",
+      "question": "What orchestration framework powers DocMind's routing?",
+      "reference_answer": "LangGraph powers the adaptive routing between simple greetings and full retrieve-generate-verify loops."
+    }
+  ]
+}

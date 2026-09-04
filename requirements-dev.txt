@@ -1,0 +1,2 @@
+# Dev/test-only dependencies, not needed to run the app itself
+locust==2.46.4
